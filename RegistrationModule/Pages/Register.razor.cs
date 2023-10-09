@@ -25,6 +25,7 @@ namespace RegistrationModule.Pages
         [Required]
         public string Login { get; set; }
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9]{6}$", ErrorMessage = "Пароль должен состоять из 6 знаков, включая цифры и буквы")]
         public string Password { get; set; }
         [Required]
         public string Name { get; set; }

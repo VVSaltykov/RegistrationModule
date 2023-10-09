@@ -4,16 +4,13 @@
 
     <div class="col-md-6 offset-md-3">
 
+
+        <h1>Enter zone</h1>
+
         @if (UserRegistered == true)
         {
             <p>Вы зарегистрированы</p>
         }
-        else
-        {
-            <p>Ваши данные не валидны</p>
-        }
-
-        <h1>Enter zone</h1>
 
         <EditForm Model="registerViewModel" OnValidSubmit="RegisterAsync">
             <DataAnnotationsValidator />
