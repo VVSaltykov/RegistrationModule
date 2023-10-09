@@ -1,0 +1,33 @@
+﻿@page "/login"
+
+<div class="row">
+
+    <div class="col-md-6 offset-md-3">
+
+        <h1>Enter zone</h1>
+
+        @if(UserInDB == true)
+        {
+            <p>Ваши данные подтверждены</p>
+        }
+        else
+        {
+            <p>Вы не зарегистрированы</p>
+        }
+
+        <EditForm Model="loginViewModel" OnValidSubmit="LoginAsync">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+
+            <label for="login">Login</label>
+            <InputText id="login" @bind-Value="loginViewModel.Login" class="form-control" />
+            <label for="password">Password</label>
+            <InputText id="password" @bind-Value="loginViewModel.Password" class="form-control" />
+
+            <p class="my-4">
+                <button type="submit" class="btn btn-primary">Log in</button>
+            </p>
+        </EditForm>
+
+    </div>
+</div>

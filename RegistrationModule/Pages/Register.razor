@@ -1,0 +1,39 @@
+﻿@page "/register"
+
+<div class="row">
+
+    <div class="col-md-6 offset-md-3">
+
+        @if (UserRegistered == true)
+        {
+            <p>Вы зарегистрированы</p>
+        }
+        else
+        {
+            <p>Ваши данные не валидны</p>
+        }
+
+        <h1>Enter zone</h1>
+
+        <EditForm Model="registerViewModel" OnValidSubmit="RegisterAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label for="login">Login</label>
+            <InputText id="login" @bind-Value="registerViewModel.Login" class="form-control" />
+            <label for="password">Password</label>
+            <InputText id="password" @bind-Value="registerViewModel.Password" class="form-control" />
+            <label for="password">Name</label>
+            <InputText id="password" @bind-Value="registerViewModel.Name" class="form-control" />
+            <label for="password">Phone</label>
+            <InputText id="password" @bind-Value="registerViewModel.Phone" class="form-control" />
+            <label for="password">Address</label>
+            <InputText id="password" @bind-Value="registerViewModel.Address" class="form-control" />
+
+            <p class="my-4">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </p>
+        </EditForm>
+
+    </div>
+</div>

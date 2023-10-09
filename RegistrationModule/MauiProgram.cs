@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using RegistrationModule.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using RegistrationModule.Interfaces;
+using RegistrationModule.Services;
 
 namespace RegistrationModule;
 
@@ -17,12 +19,14 @@ public static class MauiProgram
 
 		builder.Services.AddMauiBlazorWebView();
 
+
+        builder.Services.AddTransient<IAuthService, AuthService>();
+
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
 
-		builder.Services.AddSingleton<WeatherForecastService>();
 
 		return builder.Build();
 	}
