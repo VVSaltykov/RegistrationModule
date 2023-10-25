@@ -11,6 +11,10 @@
         {
             <p>Вы зарегистрированы</p>
         }
+        else
+        {
+            <p>Такой пользователь уже существует</p>
+        }
 
         <EditForm Model="registerViewModel" OnValidSubmit="RegisterAsync">
             <DataAnnotationsValidator />

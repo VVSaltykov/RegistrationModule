@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using RegistrationModule.Interfaces;
 using RegistrationModule.Services;
 
@@ -25,9 +24,7 @@ public static class MauiProgram
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
-#endif
 
-
-		return builder.Build();
+        return builder.Build();
 	}
 }

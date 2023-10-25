@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RegistrationModule.Interfaces;
 using RegistrationModule.Models;
+using RegistrationModule.Other;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -36,15 +37,19 @@ namespace RegistrationModule.Services
                 return false;
             }
         }
-        public async Task<bool> GetUser(string login, string password)
+        public async Task<AlarmStatus> GetUser(string login, string password)
         {
             using AppDbContext db = new AppDbContext();
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Id == GetUUID());
-            if (user != null && user.Login == login && user.Password == password)
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login);
+            if (user != null && user.Id == GetUUID() && user.Login == login && user.Password == password)
             {
-                return true;
+                return AlarmStatus.CorrectData;
             }
-            return false;
+            if (user.Id != GetUUID())
+            {
+                return AlarmStatus.IncorrectUUID;
+            }
+            return AlarmStatus.IncorrectData;
         }
         public string GetUUID()
         {

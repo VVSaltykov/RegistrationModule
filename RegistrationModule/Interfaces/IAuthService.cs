@@ -1,4 +1,5 @@
 ﻿using RegistrationModule.Models;
+using RegistrationModule.Other;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace RegistrationModule.Interfaces
         /// <param name="login"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<bool> GetUser(string login, string password);
+        Task<AlarmStatus> GetUser(string login, string password);
         /// <summary>
         /// Get UUID
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using RegistrationModule.Interfaces;
+using RegistrationModule.Other;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,12 +14,18 @@ namespace RegistrationModule.Pages
     {
         [Inject]
         protected IAuthService AuthService { get; set; }
+        [Inject]
+        protected NavigationManager NavigationManager { get; set; }
         protected LoginViewModel loginViewModel { get; set; } = new LoginViewModel();
-        public bool UserInDB { get; set; } 
+        public AlarmStatus AlarmStatus { get; set; } 
 
         protected async Task LoginAsync()
         {
-            UserInDB = await AuthService.GetUser(loginViewModel.Login, loginViewModel.Password);
+            AlarmStatus = await AuthService.GetUser(loginViewModel.Login, loginViewModel.Password);
+            if (AlarmStatus == AlarmStatus.CorrectData)
+            {
+                NavigationManager.NavigateTo("/index");
+            }
         }
     }
     public class LoginViewModel

@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 
 <div class="row">
 
@@ -6,13 +6,13 @@
 
         <h1>Enter zone</h1>
 
-        @if(UserInDB == true)
+        @if(AlarmStatus == Other.AlarmStatus.IncorrectData)
         {
-            <p>Ваши данные подтверждены</p>
+            <p>Данные введены неверно!</p>
         }
-        else
+        else if (AlarmStatus == Other.AlarmStatus.IncorrectUUID)
         {
-            <p>Введите свои данные или зарегистрируйтесь</p>
+            <p>UUID неверен!</p>
         }
 
         <EditForm Model="loginViewModel" OnValidSubmit="LoginAsync">
