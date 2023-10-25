@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.EntityFrameworkCore;
 using RegistrationModule.Interfaces;
 using RegistrationModule.Models;
 using RegistrationModule.Other;
@@ -19,15 +20,30 @@ namespace RegistrationModule.Services
             try
             {
                 using AppDbContext db = new AppDbContext();
+                Random random = new Random();
+                Hash salt = new Hash();
+
+                salt.HashSalt = new byte[10];
+                random.NextBytes(salt.HashSalt);
+
                 User user = new User
                 {
                     Login = login,
-                    Password = password,
+                    Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                                password: password,
+                                salt: salt.HashSalt,
+                                prf: KeyDerivationPrf.HMACSHA256,
+                                iterationCount: 100000,
+                                numBytesRequested: 256 / 8)),
                     Name = name,
                     Phone = phone,
                     Address = address
                 };
                 user.Id = GetUUID();
+                salt.Password = user.Password;
+                db.Hashes.Add(salt);
+                await db.SaveChangesAsync();
+                user.Salt = salt;
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
                 return true;
@@ -41,7 +57,14 @@ namespace RegistrationModule.Services
         {
             using AppDbContext db = new AppDbContext();
             var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login);
-            if (user != null && user.Id == GetUUID() && user.Login == login && user.Password == password)
+            var userSalt = await GetUserSalt(user);
+            var userPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                                password: password,
+                                salt: userSalt,
+                                prf: KeyDerivationPrf.HMACSHA256,
+                                iterationCount: 100000,
+                                numBytesRequested: 256 / 8));
+            if (user != null && user.Id == GetUUID() && user.Login == login && user.Password == userPassword)
             {
                 return AlarmStatus.CorrectData;
             }
@@ -50,6 +73,12 @@ namespace RegistrationModule.Services
                 return AlarmStatus.IncorrectUUID;
             }
             return AlarmStatus.IncorrectData;
+        }
+        public async Task<byte[]> GetUserSalt(User user)
+        {
+            using AppDbContext appDbContext = new AppDbContext();
+            var salt = await appDbContext.Hashes.FirstOrDefaultAsync(s => s.Password == user.Password);
+            return salt.HashSalt;
         }
         public string GetUUID()
         {

@@ -1,5 +1,7 @@
 ﻿@page "/"
 
+@inject IJSRuntime JSRuntime
+
 <div class="row">
 
     <div class="col-md-6 offset-md-3">
@@ -13,6 +15,7 @@
         else if (AlarmStatus == Other.AlarmStatus.IncorrectUUID)
         {
             <p>UUID неверен!</p>
+            Count++;
         }
 
         <EditForm Model="loginViewModel" OnValidSubmit="LoginAsync">
@@ -24,10 +27,41 @@
             <label for="password">Password</label>
             <InputText id="password" @bind-Value="loginViewModel.Password" class="form-control" />
 
-            <p class="my-4">
-                <button type="submit" class="btn btn-primary">Log in</button>
-            </p>
+            @if (Count == 5)
+            {
+                <p>Превышен лимит неправильных попыток! Кнопка будет скрыта в течение 30 секунд.</p>
+                @if (!IsButtonHidden)
+                {
+                    <p class="my-4">
+                        <button type="submit" class="btn btn-primary" @onclick="IncrementCount">Log in</button>
+                    </p>
+                }
+            }
+            else
+            {
+                <p class="my-4">
+                    <button type="submit" class="btn btn-primary" @onclick="IncrementCount">Log in</button>
+                </p>
+            }
         </EditForm>
 
     </div>
 </div>
+
+
+@code{
+    private bool IsButtonHidden { get; set; }
+
+    private async Task IncrementCount()
+    {
+        Count++;
+        if (Count == 5)
+        {
+            IsButtonHidden = true;
+            await Task.Delay(30000); // Delay for 30 seconds
+            IsButtonHidden = false;
+            Count = 0;
+            await JSRuntime.InvokeVoidAsync("eval", "location.reload(true)"); // Refresh the page
+        }
+    }
+}

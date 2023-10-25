@@ -11,7 +11,7 @@ using RegistrationModule;
 namespace RegistrationModule.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231009084655_init")]
+    [Migration("20231025221637_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -23,6 +23,19 @@ namespace RegistrationModule.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("RegistrationModule.Models.Hash", b =>
+                {
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("HashSalt")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Password");
+
+                    b.ToTable("Hashes");
+                });
 
             modelBuilder.Entity("RegistrationModule.Models.User", b =>
                 {
@@ -44,9 +57,23 @@ namespace RegistrationModule.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SaltPassword")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("SaltPassword");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("RegistrationModule.Models.User", b =>
+                {
+                    b.HasOne("RegistrationModule.Models.Hash", "Salt")
+                        .WithMany()
+                        .HasForeignKey("SaltPassword");
+
+                    b.Navigation("Salt");
                 });
 #pragma warning restore 612, 618
         }

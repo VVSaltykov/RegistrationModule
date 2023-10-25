@@ -13,6 +13,7 @@ namespace RegistrationModule.Other
     {
         CorrectData,
         IncorrectData,
-        IncorrectUUID
+        IncorrectUUID,
+        Exceeding
     }
 }

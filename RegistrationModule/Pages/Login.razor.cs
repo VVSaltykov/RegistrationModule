@@ -17,7 +17,8 @@ namespace RegistrationModule.Pages
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
         protected LoginViewModel loginViewModel { get; set; } = new LoginViewModel();
-        public AlarmStatus AlarmStatus { get; set; } 
+        protected AlarmStatus AlarmStatus { get; set; } 
+        protected int Count { get; set; }
 
         protected async Task LoginAsync()
         {

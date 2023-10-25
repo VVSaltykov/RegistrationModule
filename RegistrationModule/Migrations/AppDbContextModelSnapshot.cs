@@ -21,6 +21,19 @@ namespace RegistrationModule.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("RegistrationModule.Models.Hash", b =>
+                {
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("HashSalt")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Password");
+
+                    b.ToTable("Hashes");
+                });
+
             modelBuilder.Entity("RegistrationModule.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -41,9 +54,23 @@ namespace RegistrationModule.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SaltPassword")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("SaltPassword");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("RegistrationModule.Models.User", b =>
+                {
+                    b.HasOne("RegistrationModule.Models.Hash", "Salt")
+                        .WithMany()
+                        .HasForeignKey("SaltPassword");
+
+                    b.Navigation("Salt");
                 });
 #pragma warning restore 612, 618
         }
