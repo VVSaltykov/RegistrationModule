@@ -14,5 +14,7 @@ namespace RegistrationModule.Models
         public string Name { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+
+        public Salt Salt { get; set; }
     }
 }

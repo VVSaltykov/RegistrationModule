@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RegistrationModule.Models
 {
-    public class Hash
+    public class Salt
     {
     }
 }
