@@ -1,7 +1,50 @@
 ﻿@page "/index"
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
-<h1>Добро пожаловать! Вы успешно прошли авторизацию!</h1>
+<link href="index.css" rel="stylesheet" />
 
-Добро пожаловать в ваше новое приложение.
 
-<textarea rows="6" cols="100" placeholder="Ваш текст здесь..."></textarea>
+<div class="text-center">
+    <textarea @bind="myText" rows="5" cols="50"></textarea>
+    <br />
+    <button @onclick="DownloadText" class="btn-download">Скачать</button>
+</div>
+
+@if (isFileDownloaded)
+{
+    <p class="success-message text-center">Файл успешно скачан!</p>
+}
+
+
+@code {
+    private string myText;
+    private bool isFileDownloaded;
+
+    private async Task DownloadTextAsFile()
+    {
+        try
+        {
+            string text = myText;
+
+            string fileName = await JSRuntime.InvokeAsync<string>("prompt", "Введите имя файла");
+
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                string filePath = fileName + ".txt";
+
+                await JSRuntime.InvokeVoidAsync("saveTextAsFile", filePath, text);
+
+                isFileDownloaded = true;
+                myText = string.Empty;
+            }
+        }
+        catch(Exception ex){}
+    }
+
+
+    private async Task DownloadText()
+    {
+        await DownloadTextAsFile();
+    }
+}

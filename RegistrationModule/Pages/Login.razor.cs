@@ -25,7 +25,7 @@ namespace RegistrationModule.Pages
             AlarmStatus = await AuthService.GetUser(loginViewModel.Login, loginViewModel.Password);
             if (AlarmStatus == AlarmStatus.CorrectData)
             {
-                NavigationManager.NavigateTo("/index");
+                NavigationManager.NavigateTo("Index");
             }
         }
     }

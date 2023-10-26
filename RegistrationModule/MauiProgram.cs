@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using RegistrationModule.Interfaces;
 using RegistrationModule.Services;
+using Syncfusion.Blazor;
 
 namespace RegistrationModule;
 
@@ -16,14 +17,14 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});
 
-		builder.Services.AddMauiBlazorWebView();
 
+        builder.Services.AddMauiBlazorWebView();
 
         builder.Services.AddTransient<IAuthService, AuthService>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
         return builder.Build();
