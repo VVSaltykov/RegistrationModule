@@ -1,5 +1,6 @@
 ﻿@page "/index"
 @using Microsoft.JSInterop
+@using System.Text;
 @inject IJSRuntime JSRuntime
 
 <link href="index.css" rel="stylesheet" />
@@ -16,10 +17,39 @@
     <p class="success-message text-center">Файл успешно скачан!</p>
 }
 
+<h3>ShowTextFile</h3>
+<div class="col-4">
+    <InputFile OnChange="HandleFileChange"></InputFile>
+</div>
+
+<pre>
+    <textarea @bind="fileContent"></textarea>
+    <button @onclick="SaveFile">Сохранить</button>
+</pre>
+
 
 @code {
     private string myText;
     private bool isFileDownloaded;
+    private string fileContent = "";
+    private string _fileName;
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffer);
+        fileContent = Encoding.UTF8.GetString(buffer);
+        _fileName = file.Name;
+    }
+
+    private async Task SaveFile()
+    {
+        var buffer = Encoding.UTF8.GetBytes(fileContent);
+        var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        var filePath = Path.Combine(downloadsFolder, _fileName);
+        await File.WriteAllBytesAsync(filePath, buffer);
+    }
 
     private async Task DownloadTextAsFile()
     {

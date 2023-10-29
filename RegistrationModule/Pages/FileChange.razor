@@ -1,0 +1,25 @@
+﻿@page "/file-editor"
+@using System.Text;
+
+<h3>ShowTextFile</h3>
+<div class="col-4">
+    <InputFile OnChange="OnInputFileChanged"></InputFile>
+</div>
+
+<pre>
+    @fileContent
+</pre>
+
+@code {
+    private string fileContent = "";
+
+    private async Task OnInputFileChanged(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        long maxsize = 512000;
+
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(maxsize).ReadAsync(buffer);
+        fileContent = System.Text.Encoding.UTF8.GetString(buffer);
+    }
+}

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RegistrationModule.Other;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace RegistrationModule.Models
         public string Phone { get; set; }
         public string Address { get; set; }
         public Hash Salt { get; set; }
+        public Role Role { get; set; } = Role.User;
     }
 }
