@@ -1,6 +1,9 @@
 ﻿@page "/index"
 @using Microsoft.JSInterop
 @using System.Text;
+@using RegistrationModule.Models;
+@using RegistrationModule.Repositories;
+@using System.Text.Json;
 @inject IJSRuntime JSRuntime
 
 <link href="index.css" rel="stylesheet" />
@@ -22,17 +25,31 @@
     <InputFile OnChange="HandleFileChange"></InputFile>
 </div>
 
-<pre>
-    <textarea @bind="fileContent"></textarea>
-    <button @onclick="SaveFile">Сохранить</button>
-</pre>
+@if (isInitialized == true)
+{
+    @if (user.Role == Other.Role.Admin)
+    {
+        <pre>
+            <textarea @bind="fileContent"></textarea>
+            <button @onclick="SaveFile">Сохранить</button>
+        </pre>
+    }
+    @if (user.Role == Other.Role.User)
+    {
+        <pre>
+            @fileContent
+        </pre>
+    }
+}
 
 
 @code {
     private string myText;
     private bool isFileDownloaded;
+    private bool isInitialized;
     private string fileContent = "";
     private string _fileName;
+    private User user;
 
     private async Task HandleFileChange(InputFileChangeEventArgs e)
     {
@@ -72,9 +89,18 @@
         catch(Exception ex){}
     }
 
-
     private async Task DownloadText()
     {
         await DownloadTextAsFile();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string userJson = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "user");
+        if (!string.IsNullOrEmpty(userJson))
+        {
+            user = JsonSerializer.Deserialize<User>(userJson);
+        }
+        isInitialized = true;
     }
 }

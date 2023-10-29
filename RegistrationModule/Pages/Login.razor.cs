@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using RegistrationModule.Interfaces;
 using RegistrationModule.Other;
+using RegistrationModule.Repositories;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace RegistrationModule.Pages
@@ -25,6 +28,9 @@ namespace RegistrationModule.Pages
             AlarmStatus = await AuthService.GetUser(loginViewModel.Login, loginViewModel.Password);
             if (AlarmStatus == AlarmStatus.CorrectData)
             {
+                var user = await UserRepository.GetUserByLoginAsync(loginViewModel.Login);
+                string userJson = JsonSerializer.Serialize(user);
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "user", userJson);
                 NavigationManager.NavigateTo("Index");
             }
         }
