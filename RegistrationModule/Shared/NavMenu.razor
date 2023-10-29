@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using RegistrationModule.Other
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">RegistrationModule</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -9,20 +11,39 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="">
-                <span class="oi oi-account-login" aria-hidden="true"></span> Login
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="register">
-                <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Register
-            </NavLink>
-        </div>
+        @if (!Condition.IsAuthenticated)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="register">
+                    <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Register
+                </NavLink>
+            </div> 
+        }
+        @if (Condition.IsAuthenticated)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="index">
+                    <span class="oi oi-arrow-bottom" aria-hidden="true"></span> File editor
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users">
+                    <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Users
+                </NavLink>
+            </div> 
+        }
     </nav>
 </div>
 
 @code {
+    [Inject]
+    private Condition Condition { get; set; }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;

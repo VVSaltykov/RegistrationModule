@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using RegistrationModule.Interfaces;
+using RegistrationModule.Other;
 using RegistrationModule.Services;
 using Syncfusion.Blazor;
+using System.Net.NetworkInformation;
+using Condition = RegistrationModule.Other.Condition;
 
 namespace RegistrationModule;
 
@@ -21,9 +24,10 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
 
         builder.Services.AddTransient<IAuthService, AuthService>();
+        builder.Services.AddSingleton<Condition>();
 
 #if DEBUG
-		builder.Services.AddBlazorWebViewDeveloperTools();
+        builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
 

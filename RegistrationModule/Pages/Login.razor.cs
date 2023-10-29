@@ -3,6 +3,7 @@ using Microsoft.JSInterop;
 using RegistrationModule.Interfaces;
 using RegistrationModule.Other;
 using RegistrationModule.Repositories;
+using RegistrationModule.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,6 +20,8 @@ namespace RegistrationModule.Pages
         protected IAuthService AuthService { get; set; }
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
+        [Inject]
+        protected Other.Condition Condition { get; set; }
         protected LoginViewModel loginViewModel { get; set; } = new LoginViewModel();
         protected AlarmStatus AlarmStatus { get; set; } 
         protected int Count { get; set; }
@@ -31,7 +34,8 @@ namespace RegistrationModule.Pages
                 var user = await UserRepository.GetUserByLoginAsync(loginViewModel.Login);
                 string userJson = JsonSerializer.Serialize(user);
                 await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "user", userJson);
-                NavigationManager.NavigateTo("Index");
+                Condition.IsAuthenticated = true;
+                NavigationManager.NavigateTo("Index", forceLoad: true);
             }
         }
     }
