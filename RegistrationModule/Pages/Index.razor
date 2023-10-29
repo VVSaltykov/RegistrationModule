@@ -25,27 +25,31 @@
     <InputFile OnChange="HandleFileChange"></InputFile>
 </div>
 
-@if (isInitialized == true)
+@if (isInitialized)
 {
     @if (user.Role == Other.Role.Admin)
     {
-        <pre>
-            <textarea @bind="fileContent"></textarea>
-            <button @onclick="SaveFile">Сохранить</button>
+        <pre class="text-center">
+            <textarea @bind="fileContent" rows="5" cols="50"></textarea>
+            <button @onclick="SaveFile" class="btn-download">Сохранить</button>
         </pre>
     }
     @if (user.Role == Other.Role.User)
     {
-        <pre>
-            @fileContent
+        <pre class="text-center">
+            <textarea @bind="fileContent" rows="5" cols="50"></textarea>
         </pre>
     }
 }
-
+@if (isFileSaved)
+{
+    <p class="success-message text-center">Файл успешно сохранен!</p>
+}
 
 @code {
     private string myText;
     private bool isFileDownloaded;
+    private bool isFileSaved;
     private bool isInitialized;
     private string fileContent = "";
     private string _fileName;
@@ -66,6 +70,7 @@
         var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
         var filePath = Path.Combine(downloadsFolder, _fileName);
         await File.WriteAllBytesAsync(filePath, buffer);
+        isFileSaved = true;
     }
 
     private async Task DownloadTextAsFile()
