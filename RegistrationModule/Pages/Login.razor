@@ -57,10 +57,10 @@
         if (Count == 5)
         {
             IsButtonHidden = true;
-            await Task.Delay(30000); // Delay for 30 seconds
+            await Task.Delay(30000); 
             IsButtonHidden = false;
             Count = 0;
-            await JSRuntime.InvokeVoidAsync("eval", "location.reload(true)"); // Refresh the page
+            await JSRuntime.InvokeVoidAsync("eval", "location.reload(true)");
         }
     }
 }

@@ -10,7 +10,6 @@ namespace RegistrationModule.Services
 {
     public class AuthService : IAuthService
     {
-
         public AuthService()
         {
         }

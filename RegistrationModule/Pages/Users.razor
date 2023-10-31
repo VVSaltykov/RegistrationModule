@@ -1,0 +1,74 @@
+﻿@page "/users"
+@using RegistrationModule.Models;
+@using RegistrationModule.Other;
+@using RegistrationModule.Repositories;
+@using System.Text.Json;
+@inject IJSRuntime JSRuntime
+
+<h3>Users</h3>
+
+@if (users != null)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Login</th>
+                @if (user.Role == Other.Role.Admin)
+                {
+                    <th>Role</th>
+                    <th>Action</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var selectUser in users)
+            {
+                <tr>
+                    <td>@selectUser.Login</td>
+                    @if (user.Role == Other.Role.Admin)
+                    {
+                        <td>@selectUser.Role</td>
+                        <td>
+                            @if (selectUser.Id != user.Id)
+                            {
+                                <select @bind="selectUser.Role">
+                                    <option value="">Select Role</option>
+                                    <option value="@Other.Role.Admin">Admin</option>
+                                    <option value="@Other.Role.User">User</option>
+                                </select>
+
+                                <button @onclick="async () => await ChangeUserRole(selectUser.Id, selectUser.Role)">Change Role</button>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No users found.</p>
+}
+
+@code {
+    private List<User> users;
+    private User user;
+
+    protected async Task ChangeUserRole(string userId, Role role)
+    {
+        var user = await UserRepository.GetUserByIdAsync(userId);
+        user.Role = role;
+        await UserRepository.UpdateUserAsync(user);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserRepository.GetUsersAsync();
+        string userJson = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "user");
+        if (!string.IsNullOrEmpty(userJson))
+        {
+            user = JsonSerializer.Deserialize<User>(userJson);
+        }
+    }
+}

@@ -16,5 +16,23 @@ namespace RegistrationModule.Repositories
             User user = await appDbContext.Users.FirstOrDefaultAsync(u => u.Login == login);
             return user;
         }
+        public static async Task<User> GetUserByIdAsync(string userId)
+        {
+            using AppDbContext appDbContext = new AppDbContext();
+            User user = await appDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return user;
+        }
+        public static async Task<List<User>> GetUsersAsync()
+        {
+            using AppDbContext appDbContext = new AppDbContext();
+            var users = await appDbContext.Users.ToListAsync();
+            return users;
+        }
+        public static async Task UpdateUserAsync(User user)
+        {
+            using AppDbContext appDbContext = new AppDbContext();
+            appDbContext.Update(user);
+            await appDbContext.SaveChangesAsync();
+        }
     }
 }

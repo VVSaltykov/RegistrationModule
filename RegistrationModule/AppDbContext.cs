@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
 using RegistrationModule.Models;
 
 namespace RegistrationModule
