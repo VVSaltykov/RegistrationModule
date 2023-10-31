@@ -74,6 +74,7 @@
         {
             filePath = Path.ChangeExtension(filePath, ".secretextension");
         }
+        await FileRepository.HashPath(filePath);
         await File.WriteAllBytesAsync(filePath, buffer);
         isFileSaved = true;
     }
@@ -81,7 +82,7 @@
     private async Task DownloadTextAsFile()
     {
         try
-        {
+        {   
             string text = myText;
 
             string fileName = await JSRuntime.InvokeAsync<string>("prompt", "Введите имя файла");
@@ -89,7 +90,12 @@
             if (!string.IsNullOrEmpty(fileName))
             {
                 string filePath = fileName + ".txt";
-
+                string currentExtension = System.IO.Path.GetExtension(filePath);
+                if (currentExtension == ".txt")
+                {
+                    filePath = Path.ChangeExtension(filePath, ".secretextension");
+                }
+                await FileRepository.HashPath(filePath);
                 await JSRuntime.InvokeVoidAsync("saveTextAsFile", filePath, text);
 
                 isFileDownloaded = true;

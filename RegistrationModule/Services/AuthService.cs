@@ -20,17 +20,17 @@ namespace RegistrationModule.Services
             {
                 using AppDbContext db = new AppDbContext();
                 Random random = new Random();
-                Hash salt = new Hash();
+                Hash hash = new Hash();
 
-                salt.HashSalt = new byte[10];
-                random.NextBytes(salt.HashSalt);
+                hash.HashSalt = new byte[10];
+                random.NextBytes(hash.HashSalt);
 
                 User user = new User
                 {
                     Login = login,
                     Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                                 password: password,
-                                salt: salt.HashSalt,
+                                salt: hash.HashSalt,
                                 prf: KeyDerivationPrf.HMACSHA256,
                                 iterationCount: 100000,
                                 numBytesRequested: 256 / 8)),
@@ -39,10 +39,10 @@ namespace RegistrationModule.Services
                     Address = address
                 };
                 user.Id = GetUUID();
-                salt.Password = user.Password;
-                db.Hashes.Add(salt);
+                hash.Password = user.Password;
+                db.Hashes.Add(hash);
                 await db.SaveChangesAsync();
-                user.Salt = salt;
+                user.Salt = hash;
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
                 return true;
