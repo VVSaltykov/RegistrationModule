@@ -69,6 +69,11 @@
         var buffer = Encoding.UTF8.GetBytes(fileContent);
         var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
         var filePath = Path.Combine(downloadsFolder, _fileName);
+        string currentExtension = System.IO.Path.GetExtension(filePath); 
+        if (currentExtension == ".txt") 
+        {
+            filePath = Path.ChangeExtension(filePath, ".secretextension");
+        }
         await File.WriteAllBytesAsync(filePath, buffer);
         isFileSaved = true;
     }
