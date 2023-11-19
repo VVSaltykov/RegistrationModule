@@ -75,9 +75,16 @@ namespace RegistrationModule.Services
         }
         public async Task<byte[]> GetUserSalt(User user)
         {
-            using AppDbContext appDbContext = new AppDbContext();
-            var salt = await appDbContext.Hashes.FirstOrDefaultAsync(s => s.Password == user.Password);
-            return salt.HashSalt;
+            try
+            {
+                using AppDbContext appDbContext = new AppDbContext();
+                var salt = await appDbContext.Hashes.FirstOrDefaultAsync(s => s.Password == user.Password);
+                return salt.HashSalt;
+            }
+            catch (Exception ex)
+            {
+                return new byte[0];
+            }
         }
         public string GetUUID()
         {

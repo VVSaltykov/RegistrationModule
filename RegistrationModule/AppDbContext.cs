@@ -8,7 +8,7 @@ namespace RegistrationModule
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Hash> Hashes { get; set; }
-        public DbSet<FileHash> FileHashes { get; set; }
+        public DbSet<Models.File> Files { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -14,6 +14,6 @@ namespace RegistrationModule.Other
         CorrectData,
         IncorrectData,
         IncorrectUUID,
-        Exceeding
+        UserRegistered
     }
 }

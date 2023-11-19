@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace RegistrationModule.Models
 {
-    public class FileHash
+    public class File
     {
         [Key]
         public string Path { get; set; }
         public byte[] Salt { get; set; }
-        public DateTime DateTime { get; set; }
+        public string Name { get; set; }
+        public string DateTime { get; set; }
     }
 }
