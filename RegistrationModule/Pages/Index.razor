@@ -1,4 +1,5 @@
 ﻿@page "/index"
+@using ICSharpCode.SharpZipLib.Zip;
 @using Microsoft.JSInterop
 @using System.Text;
 @using RegistrationModule.Models;
@@ -58,33 +59,79 @@
     private async Task HandleFileChange(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        var lastModified = file.LastModified.DateTime.ToString("dd-MM-yyyy HH:mm");
-        var buffer = new byte[file.Size];
-        await file.OpenReadStream().ReadAsync(buffer);
-        _fileName = file.Name;
-        var fileBeenModified = await FileRepository.FileBeenModified(lastModified);
-        if (fileBeenModified)
+        bool isZipFile = Path.GetExtension(file.Name).Equals(".zip", StringComparison.OrdinalIgnoreCase);
+        if (isZipFile)
         {
-            fileContent = "Файл был изменен вне системы. Просмотр содержимого недоступен!";
+            var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            var zipFilePath = Path.Combine(downloadsFolder, file.Name);
+            using (var zipFile = new ZipFile(zipFilePath))
+            {
+                zipFile.Password = "your_password";
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+                var entry = zipFile.GetEntry(fileNameWithoutExtension);
+                if (entry != null)
+                {
+                    // Извлекаем файл из архива
+                    using (var stream = zipFile.GetInputStream(entry))
+                    using (var reader = new StreamReader(stream))
+                    {
+                        fileContent = await reader.ReadToEndAsync();
+                    }
+                }
+                else
+                {
+                    fileContent = "Файл не найден в архиве.";
+                }
+            }
         }
         else
         {
-            fileContent = Encoding.UTF8.GetString(buffer);
+            var lastModified = file.LastModified.DateTime.ToString("dd-MM-yyyy HH:mm");
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            _fileName = file.Name;
+            var fileBeenModified = await FileRepository.FileBeenModified(lastModified);
+            if (fileBeenModified)
+            {
+                fileContent = "Файл был изменен вне системы. Просмотр содержимого недоступен!";
+            }
+            else
+            {
+                fileContent = Encoding.UTF8.GetString(buffer);
+            }
         }
     }
 
     private async Task SaveFile()
     {
+        //var buffer = Encoding.UTF8.GetBytes(fileContent);
+        //var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        //var filePath = Path.Combine(downloadsFolder, _fileName);
+        //string currentExtension = System.IO.Path.GetExtension(filePath); 
+        //if (currentExtension == ".txt") 
+        //{
+        //    filePath = Path.ChangeExtension(filePath, ".secretextension");
+        //}
+        //await FileRepository.AddFileInfoToDB(filePath, _fileName);
+        //await System.IO.File.WriteAllBytesAsync(filePath, buffer);
+        //isFileSaved = true;
         var buffer = Encoding.UTF8.GetBytes(fileContent);
         var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-        var filePath = Path.Combine(downloadsFolder, _fileName);
-        string currentExtension = System.IO.Path.GetExtension(filePath); 
-        if (currentExtension == ".txt") 
+        var zipFilePath = Path.Combine(downloadsFolder, _fileName + ".zip");
+
+        // Создаем новый zip-архив
+        using (var zipFile = new Ionic.Zip.ZipFile())
         {
-            filePath = Path.ChangeExtension(filePath, ".secretextension");
+            // Устанавливаем пароль для zip-архива
+            zipFile.Password = "your_password";
+
+            // Добавляем файл внутри архива
+            zipFile.AddEntry(_fileName, buffer);
+
+            // Сохраняем zip-архив на диск
+            zipFile.Save(zipFilePath);
         }
-        await FileRepository.HashPath(filePath, _fileName);
-        await System.IO.File.WriteAllBytesAsync(filePath, buffer);
+
         isFileSaved = true;
     }
 
@@ -104,7 +151,7 @@
                 {
                     filePath = Path.ChangeExtension(filePath, ".secretextension");
                 }
-                await FileRepository.HashPath(filePath, fileName);
+                await FileRepository.AddFileInfoToDB(filePath, fileName);
                 await JSRuntime.InvokeVoidAsync("saveTextAsFile", filePath, text);
 
                 isFileDownloaded = true;

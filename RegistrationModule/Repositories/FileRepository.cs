@@ -11,7 +11,7 @@ namespace RegistrationModule.Repositories
 {
     public class FileRepository
     {
-        public static async Task HashPath(string filePath, string fileName)
+        public static async Task AddFileInfoToDB(string filePath, string fileName)
         {
             using AppDbContext appDbContext = new AppDbContext();
             Models.File file = new Models.File();
