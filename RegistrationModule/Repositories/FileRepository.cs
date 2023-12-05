@@ -34,6 +34,14 @@ namespace RegistrationModule.Repositories
             appDbContext.Files.Add(file);
             await appDbContext.SaveChangesAsync();
         }
+        public static async Task UpdateFileInfo(string fileName, string password)
+        {
+            using AppDbContext appDbContext = new AppDbContext();
+            var file = await appDbContext.Files.FirstOrDefaultAsync(f => f.Name == fileName);
+            file.Password = password;
+            appDbContext.Update(file);
+            await appDbContext.SaveChangesAsync();
+        }
         public static async Task<bool> FileBeenModified(string dateTime)
         {
             using AppDbContext appDbContext = new AppDbContext();
@@ -43,6 +51,16 @@ namespace RegistrationModule.Repositories
                 return true;
             }
             return false;
+        }
+        public static async Task<string> GetFilePassword(string fileName)
+        {
+            using AppDbContext appDbContext = new AppDbContext();
+            var file = await appDbContext.Files.FirstOrDefaultAsync(f => f.Name == fileName);
+            if (file == null)
+            {
+                return null;
+            }
+            return file.Password;
         }
     }
 }

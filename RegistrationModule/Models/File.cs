@@ -11,6 +11,7 @@ namespace RegistrationModule.Models
     {
         [Key]
         public string Path { get; set; }
+        public string Password { get; set; }
         public byte[] Salt { get; set; }
         public string Name { get; set; }
         public string DateTime { get; set; }

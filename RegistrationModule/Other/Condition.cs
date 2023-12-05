@@ -9,5 +9,6 @@ namespace RegistrationModule.Other
     public class Condition
     {
         public bool IsAuthenticated { get; set; } = false;
+        public bool IsOpened { get; set; } = false;
     }
 }

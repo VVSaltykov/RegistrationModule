@@ -6,6 +6,7 @@
 @using RegistrationModule.Repositories;
 @using System.Text.Json;
 @inject IJSRuntime JSRuntime
+@inject Other.Condition Condition 
 
 <link href="index.css" rel="stylesheet" />
 
@@ -59,14 +60,16 @@
     private async Task HandleFileChange(InputFileChangeEventArgs e)
     {
         var file = e.File;
+        Condition.IsOpened = false;
         bool isZipFile = Path.GetExtension(file.Name).Equals(".zip", StringComparison.OrdinalIgnoreCase);
         if (isZipFile)
         {
             var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             var zipFilePath = Path.Combine(downloadsFolder, file.Name);
+            var filePassword = await FileRepository.GetFilePassword(file.Name);
             using (var zipFile = new ZipFile(zipFilePath))
             {
-                zipFile.Password = "your_password";
+                zipFile.Password = filePassword;
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
                 var entry = zipFile.GetEntry(fileNameWithoutExtension);
                 if (entry != null)
@@ -76,6 +79,7 @@
                     using (var reader = new StreamReader(stream))
                     {
                         fileContent = await reader.ReadToEndAsync();
+                        Condition.IsOpened = true;
                     }
                 }
                 else
@@ -123,7 +127,9 @@
         using (var zipFile = new Ionic.Zip.ZipFile())
         {
             // Устанавливаем пароль для zip-архива
-            zipFile.Password = "your_password";
+            zipFile.Password = $"{user.Login}";
+
+            await FileRepository.UpdateFileInfo(Path.GetFileNameWithoutExtension(_fileName), user.Login);
 
             // Добавляем файл внутри архива
             zipFile.AddEntry(_fileName, buffer);
