@@ -15,5 +15,6 @@ namespace RegistrationModule.Models
         public byte[] Salt { get; set; }
         public string Name { get; set; }
         public string DateTime { get; set; }
+        public byte[] HashSalt { get; set; }
     }
 }

@@ -66,7 +66,7 @@
         {
             var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             var zipFilePath = Path.Combine(downloadsFolder, file.Name);
-            var filePassword = await FileRepository.GetFilePassword(file.Name);
+            var filePassword = await FileRepository.GetFilePassword(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(file.Name)));
             using (var zipFile = new ZipFile(zipFilePath))
             {
                 zipFile.Password = filePassword;
@@ -127,10 +127,10 @@
         using (var zipFile = new Ionic.Zip.ZipFile())
         {
             // Устанавливаем пароль для zip-архива
-            zipFile.Password = $"{user.Login}";
 
             await FileRepository.UpdateFileInfo(Path.GetFileNameWithoutExtension(_fileName), user.Login);
-
+            var file = await FileRepository.GetFileAsync(Path.GetFileNameWithoutExtension(_fileName));
+            zipFile.Password = $"{file.Password}";
             // Добавляем файл внутри архива
             zipFile.AddEntry(_fileName, buffer);
 
